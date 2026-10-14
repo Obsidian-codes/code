@@ -55,24 +55,32 @@ void building_3(std::ostream &city, double x, double y, double w, double h) {
   rect(city, x, y, w, h, "rgb(9, 23, 34)");
 }
 
-void window1(std::ostream &city, double x, double y, double w, double h) {
-  double newY = y;
-  while (newY + h <= y + 1000) {
-    rect(city, x, newY, w, h, "rgb(247, 229, 223)");
-    newY += h;
-    newY += 25;
-  }
-}
-
-// void window2(std::ostream &city, double x, double y, double w, double h,
-//              double numx, double numy) {
-//   double gap = 20;
-//   for (double newY = y; newY + h <= numy; newY += h + gap) {
-//     for (double newX = x; newX + w <= numx newX += w + gap) {
-//       rect(city, newX, newY, w, h, "rgb(247, 229, 223)");
-//     }
+// void window1(std::ostream &city, double x, double y, double w, double h) {
+//   double newY = y;
+//   while (newY + h <= y + 1000) {
+//     rect(city, x, newY, w, h, "rgb(247, 229, 223)");
+//     newY += h;
+//     newY += 25;
 //   }
 // }
+
+void window(std::ostream &city, double x, double y, double w, double h,
+             double numx, double numy, int numCols) {
+  double gap = 20;
+  
+  // Loop for rows (using numy as the vertical boundary)
+  for (double newY = y; newY + h <= numy; newY += h + gap) {
+    
+    // Loop for columns based on the specified number of columns
+    for (int i = 0; i < numCols; ++i) {
+      double newX = x + i * (w + gap);
+      
+      if (newX + w <= numx) {
+        rect(city, newX, newY, w, h, "rgb(247, 229, 223)");
+      }
+    }
+  }
+}
 
 int main() {
   std::ofstream city("city.svg");
@@ -93,18 +101,30 @@ int main() {
 
   // building back
   building_1(city, 0, HEIGHT - 900, 130, 900);
-  window1(city, 10, HEIGHT - 880, 60, 30);
+  window(city, 10, HEIGHT - 870, 60, 20, 260, HEIGHT - 50, 1);
+
+  // window1(city, 10, HEIGHT - 880, 60, 20);
 
   building_1(city, 160, HEIGHT - 800, 100, 800);
-  window1(city, 175, HEIGHT - 780, 25, 20);
-  window1(city, 215, HEIGHT - 780, 25, 20);
+  window(city, 175, HEIGHT - 780, 25, 20, 260, HEIGHT - 580, 2);
 
   building_1(city, 290, HEIGHT - 1100, 230, 1100);
-  building_1(city, 520, HEIGHT - 800, 190, 800);
-  building_1(city, 740, HEIGHT - 1000, 200, 1000);
+  window(city, 315, HEIGHT - 1080, 30, 20, 600, HEIGHT - 80, 4);
+
+  building_1(city, 520, HEIGHT - 800, 160, 800);
+  window(city, 540, HEIGHT - 770, 50, 20, 800, HEIGHT - 80, 2);
+
+  building_1(city, 710, HEIGHT - 1000, 100, 1000);
+  // window(city, 760, HEIGHT - 980, 50, 20, 900, HEIGHT - 80, 2);
+
+  building_1(city, 810, HEIGHT - 1100, 100, 1000);
+  window(city, 830, HEIGHT - 1070, 20, 50, 900, HEIGHT - 80, 2);
+
 
   // buildings middle
   building_2(city, 0, HEIGHT - 500, 151, 500);
+  window(city, 10, HEIGHT - 480, 25, 20, 15, HEIGHT - 50, 2);
+
   building_2(city, 150, HEIGHT - 650, 250, 650);
   building_2(city, 400, HEIGHT - 500, 200, 500);
   building_2(city, 600, HEIGHT - 580, 180, 580);
@@ -112,8 +132,9 @@ int main() {
   building_2(city, 860, HEIGHT - 700, 140, 700);
 
   // buildings front
+  
   building_3(city, 0, HEIGHT - 380, 340, 380);
-  building_3(city, 0, HEIGHT - 380, 340, 380);
+  window(city, 15, HEIGHT - 370, 35, 20, 15, HEIGHT - 370, 3);
 
   building_3(city, 600, HEIGHT - 240, 400, 240);
   balcony(city, 600, HEIGHT - 260, 400);
