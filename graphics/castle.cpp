@@ -31,7 +31,7 @@ double tower(std::ostream& out, double x, double w, double h) {
 void battlement(std::ostream& out, double x, double y, double size, double w){
     double newX = x;
     while(newX + size <= x + w) {
-        rect(out, newX, y-size, size, size, "red", "black");
+        rect(out, newX, y-size, size, size, "grey", "none");
         newX += size;
         newX += size;
     }
@@ -58,11 +58,13 @@ int main() {
     battlement(out, 60, height_towerA, 20, 100);
 
     //tower 2
-    double height_towerB = tower(out, 440, 100, 190);
+    double height_towerB = tower(out, 440, 100, 230);
     battlement(out, 440, height_towerB, 20, 100);
 
     rect(out, 0, HEIGHT - HEIGHT_GRASS, WIDTH,
         HEIGHT_GRASS, "forestgreen", "none");
+
+    rect(out, 275, 180, 50, 100, "brown", "none");
 
     out <<"</svg>\n";
     return 0;

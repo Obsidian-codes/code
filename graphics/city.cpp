@@ -1,56 +1,127 @@
+#include <algorithm>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <random>
 #include <string>
 
 const double WIDTH = 1000;
 const double HEIGHT = 1600;
 
-void rect(std::ostream& city, double x, double y, double w, double h,
-    std::string fill, std::string stroke="none") {
-    city << "<rect x='" << x << "' y='" << y << "' width='" << w << "' height='" << h
-    << "' fill='" << fill <<"' stroke='" << stroke << "' />\n";
+std::random_device rd;
+std::mt19937 gen(rd());
+
+void rect(std::ostream &city, double x, double y, double w, double h,
+          std::string fill, std::string stroke = "none") {
+  city << "<rect x='" << x << "' y='" << y << "' width='" << w << "' height='"
+       << h << "' fill='" << fill << "' stroke='" << stroke << "' />\n";
 }
 
-void circle(std::ostream& city, double cx, double cy, double r,
-    std::string fill, std::string stroke="none") {
-    city << "<circle cx='" << cx << "' cy='" << cy << "' r='" << r
-    << "' fill='" << fill <<"' stroke='" << stroke << "' />\n";
+void balcony(std::ostream &city, double buildingX, double buildingY,
+             double buildingW, double poleW = 10, double poleH = 20) {
+  double x = buildingX;
+  double y = buildingY;
+
+  double gap = 20;
+
+  while (x + poleW <= buildingX + buildingW) {
+    rect(city, x, y, poleW, poleH, "rgb(9, 23, 34)");
+
+    x += poleW + gap;
+  }
 }
 
-void path(std::ostream& city, std::string d,
-    std::string fill, std::string stroke="none") {
-    city << "<path d='" << d << "' fill='" << fill <<"' stroke='" << stroke << "' />\n";
+void circle(std::ostream &city, double cx, double cy, double r,
+            std::string fill, std::string stroke = "none") {
+  city << "<circle cx='" << cx << "' cy='" << cy << "' r='" << r << "' fill='"
+       << fill << "' stroke='" << stroke << "' />\n";
 }
 
-void window(std::ostream& city, double x, double y, double w, double h){
-    rect(city, x, y, w, h, "rgb(247, 229, 223)");
-    return;
+void path(std::ostream &city, std::string d, std::string fill,
+          std::string stroke = "none") {
+  city << "<path d='" << d << "' fill='" << fill << "' stroke='" << stroke
+       << "' />\n";
 }
 
-int main(){
-    std::ofstream city ("city.svg");
-    if(!city){
-        std::cout << "Can't open city file :(" << std::endl;
-        return 1;
-    }
+void building_1(std::ostream &city, double x, double y, double w, double h) {
+  rect(city, x, y, w, h, "rgb(158, 98, 128)");
+}
 
-    city << "<svg width='" << WIDTH << "' height='" << HEIGHT << "' xmlns='http://www.w3.org/2000/svg'>\n";
+void building_2(std::ostream &city, double x, double y, double w, double h) {
+  rect(city, x, y, w, h, "rgb(41, 39, 52)");
+}
 
-    //sky
-    rect(city, 0, 0, WIDTH, HEIGHT, "rgb(240, 180, 180)", "none");
+void building_3(std::ostream &city, double x, double y, double w, double h) {
+  rect(city, x, y, w, h, "rgb(9, 23, 34)");
+}
 
-    //building back
-    rect(city, 0, HEIGHT - 900, 130, 900, "rgb(158, 98, 126)");
-    window(city, 10, HEIGHT - 875, 50, 25);
+void window1(std::ostream &city, double x, double y, double w, double h) {
+  double newY = y;
+  while (newY + h <= y + 1000) {
+    rect(city, x, newY, w, h, "rgb(247, 229, 223)");
+    newY += h;
+    newY += 25;
+  }
+}
 
-    rect(city, 160, HEIGHT - 800, 100, 800, "rgb(158, 98, 126)");
-    rect(city, 290, HEIGHT - 1100, 230, 1100, "rgb(158, 98, 126)");
-    rect(city, 520, HEIGHT - 800, 190, 800, "rgb(158, 98, 126)");
-    rect(city, 740, HEIGHT - 1000, 200, 1000, "rgb(158, 98, 126)");
+// void window2(std::ostream &city, double x, double y, double w, double h,
+//              double numx, double numy) {
+//   double gap = 20;
+//   for (double newY = y; newY + h <= numy; newY += h + gap) {
+//     for (double newX = x; newX + w <= numx newX += w + gap) {
+//       rect(city, newX, newY, w, h, "rgb(247, 229, 223)");
+//     }
+//   }
+// }
 
-    //buildings middle
-    //buildings front
-    city << "</svg>\n";
-    city.close();
-    return 0;
+int main() {
+  std::ofstream city("city.svg");
+  if (!city) {
+    std::cout << "Can't open city file :(" << std::endl;
+    return 1;
+  }
+
+  city << "<svg width='" << WIDTH << "' height='" << HEIGHT
+       << "' xmlns='http://www.w3.org/2000/svg'>\n";
+
+  // sky
+  rect(city, 0, 0, WIDTH, HEIGHT, "rgb(240, 192, 180)", "none");
+  circle(city, 900, 100, 1200, "rgb(238, 140, 129)");
+  circle(city, 900, 100, 900, "rgb(237, 158, 145)");
+  circle(city, 900, 100, 600, "rgb(240, 188, 174)");
+  circle(city, 900, 100, 300, "white");
+
+  // building back
+  building_1(city, 0, HEIGHT - 900, 130, 900);
+  window1(city, 10, HEIGHT - 880, 60, 30);
+
+  building_1(city, 160, HEIGHT - 800, 100, 800);
+  window1(city, 175, HEIGHT - 780, 25, 20);
+  window1(city, 215, HEIGHT - 780, 25, 20);
+
+  building_1(city, 290, HEIGHT - 1100, 230, 1100);
+  building_1(city, 520, HEIGHT - 800, 190, 800);
+  building_1(city, 740, HEIGHT - 1000, 200, 1000);
+
+  // buildings middle
+  building_2(city, 0, HEIGHT - 500, 151, 500);
+  building_2(city, 150, HEIGHT - 650, 250, 650);
+  building_2(city, 400, HEIGHT - 500, 200, 500);
+  building_2(city, 600, HEIGHT - 580, 180, 580);
+  building_2(city, 780, HEIGHT - 400, 80, 400);
+  building_2(city, 860, HEIGHT - 700, 140, 700);
+
+  // buildings front
+  building_3(city, 0, HEIGHT - 380, 340, 380);
+  building_3(city, 0, HEIGHT - 380, 340, 380);
+
+  building_3(city, 600, HEIGHT - 240, 400, 240);
+  balcony(city, 600, HEIGHT - 260, 400);
+  building_3(city, 600, HEIGHT - 270, 400, 10);
+
+  building_3(city, 850, 1260, 150, 100);
+
+  city << "</svg>\n";
+  city.close();
+  return 0;
 }
